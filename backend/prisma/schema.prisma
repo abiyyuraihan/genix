@@ -1,0 +1,49 @@
+// schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  children  Child[]
+}
+
+model Child {
+  id        Int       @id @default(autoincrement())
+  name      String
+  birthDate DateTime
+  gender    Gender
+  parentId  Int
+  parent    User      @relation(fields: [parentId], references: [id])
+  records   Record[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Record {
+  id        Int      @id @default(autoincrement())
+  date      DateTime
+  weight    Float    // dalam kilogram
+  height    Float    // dalam centimeter
+  childId   Int
+  child     Child    @relation(fields: [childId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
